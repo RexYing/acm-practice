@@ -10,6 +10,7 @@ import java.util.Scanner;
 /**
  * south central regional 2006
  * depth first search with pre-processing
+ * interleave horizontal and vertical word spaces to reduce the amount of backtracking
  * @author Rex
  *
  */

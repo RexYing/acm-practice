@@ -6,7 +6,7 @@ import java.util.Scanner;
  * Simple
  * @author Rex
  *
- * @date 23/02/2013
+ * @date 02/23/2013
  */
 public class A_2009 {
 

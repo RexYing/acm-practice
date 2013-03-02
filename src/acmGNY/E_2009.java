@@ -2,6 +2,13 @@ package acmGNY;
 
 import java.util.Scanner;
 
+/**
+ * next permutation...
+ * 
+ * @author Rex
+ *
+ * @date 02/24/2013
+ */
 public class E_2009 {
 
 	// modifies c to next permutation or returns null if such permutation does

@@ -10,7 +10,7 @@ import java.util.Scanner;
  * 
  * @author Rex
  *
- * @date 23/02/2013
+ * @date 02/23/2013
  */
 public class B_2009 {
 	private int[] myData; // number of int in the sequence

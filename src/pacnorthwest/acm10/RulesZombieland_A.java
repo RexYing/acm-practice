@@ -2,7 +2,14 @@ package pacnorthwest.acm10;
 
 import java.util.Scanner;
 
-public class RulesZombieland {
+/**
+ * Typical A problem...
+ * 
+ * @author Rex
+ *
+ * @date 02/25/2013
+ */
+public class RulesZombieland_A {
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);

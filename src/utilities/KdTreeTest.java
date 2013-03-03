@@ -12,6 +12,12 @@ import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.Stack;
 
+/**
+ * first tried in pacific northwest 2010
+ * 
+ * @author a user in CSDN
+ *
+ */
 class KDTree {
 	KPoint myPoints[]; // a list of all k-dimensional points in the tree
 	int K; // dimension
@@ -19,6 +25,7 @@ class KDTree {
 	PriorityQueue<RNode> pq;
 	Node root, cur;
 	PrintWriter out;
+	KPoint aim;
 
 	public KDTree(int K, int n, PrintWriter out) {
 		this.out = out;
@@ -32,12 +39,16 @@ class KDTree {
 	}
 
 	class KPoint {
-		int x[];
-		int lx[], mx[];
+		int coords[]; // coordinates (K-dimensional)
+		int lx[], mx[]; //least, most K-dimensional point
 		int k;
 
+		/**
+		 * 
+		 * @param M dimension
+		 */
 		public KPoint(int M) {
-			this.x = new int[M];
+			this.coords = new int[M];
 			this.lx = new int[M];
 			this.mx = new int[M];
 			Arrays.fill(lx, -1 << 30);
@@ -48,19 +59,19 @@ class KDTree {
 		double dis(KPoint t) {
 			double ans = 0;
 			for (int i = 0; i < k; i++)
-				ans += (x[i] - t.x[i]) * (x[i] - t.x[i]);
+				ans += (coords[i] - t.coords[i]) * (coords[i] - t.coords[i]);
 			return Math.sqrt(ans);
 		}
 	}
 
 	class Node {
-		KPoint p;
+		KPoint myKPoints;
 		Node left, right;
 		int num;
 		boolean flag;
 
 		Node(KPoint p) {
-			this.p = p;
+			this.myKPoints = p;
 			this.num = 1;
 			this.flag = false;
 		}
@@ -68,7 +79,7 @@ class KDTree {
 
 	class RNode {
 		Node v;
-		double r;
+		double r; //distance?
 
 		public RNode(Node v, double r) {
 			this.v = v;
@@ -76,6 +87,10 @@ class KDTree {
 		}
 	}
 
+	/**
+	 * from biggest to smallest......
+	 *
+	 */
 	class CompareRNode implements Comparator<RNode> {
 		@Override
 		public int compare(RNode o1, RNode o2) {
@@ -107,10 +122,10 @@ class KDTree {
 		int i = first, j = end;
 		KPoint tmp = myPoints[first];
 		while (i < j) {
-			while (i < j && myPoints[j].x[ii] >= tmp.x[ii])
+			while (i < j && myPoints[j].coords[ii] >= tmp.coords[ii])
 				j--;
 			myPoints[i] = myPoints[j];
-			while (i < j && myPoints[i].x[ii] <= tmp.x[ii])
+			while (i < j && myPoints[i].coords[ii] <= tmp.coords[ii])
 				i++;
 			myPoints[j] = myPoints[i];
 		}
@@ -126,18 +141,17 @@ class KDTree {
 			return 0;
 		if (v.left != null) {
 			for (int i = 0; i < K; i++) {
-				v.left.p.mx[i] = v.p.mx[i];
-				v.left.p.lx[i] = v.p.lx[i];
+				v.left.myKPoints.mx[i] = v.myKPoints.mx[i];
+				v.left.myKPoints.lx[i] = v.myKPoints.lx[i];
 			}
-			v.left.p.mx[depth] = v.p.x[depth];
+			v.left.myKPoints.mx[depth] = v.myKPoints.coords[depth];
 		}
 		if (v.right != null) {
-
 			for (int i = 0; i < K; i++) {
-				v.right.p.mx[i] = v.p.mx[i];
-				v.right.p.lx[i] = v.p.lx[i];
+				v.right.myKPoints.mx[i] = v.myKPoints.mx[i];
+				v.right.myKPoints.lx[i] = v.myKPoints.lx[i];
 			}
-			v.right.p.lx[depth] = v.p.x[depth];
+			v.right.myKPoints.lx[depth] = v.myKPoints.coords[depth];
 		}
 		int na = buildSqr(v.left, (depth + 1) % K);
 		int nb = buildSqr(v.right, (depth + 1) % K);
@@ -145,11 +159,17 @@ class KDTree {
 		return na + nb + 1;
 	}
 
-	double searchKR(KPoint t, int k) {
-		Node v = SearchKNode(root, t, k, 0);
+	/**
+	 * 
+	 * @param searchedPoint aim
+	 * @param k Kth nearest neighbor
+	 * @return
+	 */
+	double searchKR(KPoint searchedPoint, int k) {
+		Node v = SearchKNode(root, searchedPoint, k, 0);
 		if (v == null)
 			return -1.0;
-		SearchMinr(v, t);
+		SearchMinr(v, searchedPoint);
 		while (pq.size() > k) {
 			pq.poll();
 		}
@@ -159,7 +179,15 @@ class KDTree {
 			return pq.peek().r;
 	}
 
-	public Node SearchKNode(Node v, KPoint t, int k, int dp) {
+	/**
+	 * search for the KPoint in the tree
+	 * @param v root of tree / sub-tree
+	 * @param searchedPoint KPoint to be searched for
+	 * @param k Kth nearest neighbor
+	 * @param dp depth?
+	 * @return
+	 */
+	public Node SearchKNode(Node v, KPoint searchedPoint, int k, int dp) {
 		if (v == null)
 			return null;
 		if (v.num < k)
@@ -170,10 +198,10 @@ class KDTree {
 			cur = v;
 			return v;
 		}
-		if (t.x[dp] < v.p.x[dp] && v.left != null && v.left.num >= k) {
-			return SearchKNode(v.left, t, k, (dp + 1) % K);
-		} else if (t.x[dp] >= v.p.x[dp] && v.right != null && v.right.num >= k) {
-			return SearchKNode(v.right, t, k, (dp + 1) % K);
+		if (searchedPoint.coords[dp] < v.myKPoints.coords[dp] && v.left != null && v.left.num >= k) {
+			return SearchKNode(v.left, searchedPoint, k, (dp + 1) % K);
+		} else if (searchedPoint.coords[dp] >= v.myKPoints.coords[dp] && v.right != null && v.right.num >= k) {
+			return SearchKNode(v.right, searchedPoint, k, (dp + 1) % K);
 		} else {
 			v.flag = true;
 			cur = v;
@@ -184,7 +212,7 @@ class KDTree {
 	void SearchMinr(Node v, KPoint t) {
 		if (v == null)
 			return;
-		RNode tmp = new RNode(v, v.p.dis(t));
+		RNode tmp = new RNode(v, v.myKPoints.dis(t));
 		pq.add(tmp);
 		SearchMinr(v.left, t);
 		SearchMinr(v.right, t);
@@ -192,6 +220,11 @@ class KDTree {
 
 	double r, eps = 1e-8;
 
+	/**
+	 * Kth nearest neighbor
+	 * which points are closest to "aim"?
+	 * @param k
+	 */
 	void KNN(int k) {
 		while (!pq.isEmpty())
 			pq.poll();
@@ -207,9 +240,9 @@ class KDTree {
 		while (!sta.empty()) {
 			Node v = sta.pop();
 			for (int i = 0; i < K - 1; i++) {
-				out.print(v.p.x[i] + " ");
+				out.print(v.myKPoints.coords[i] + " ");
 			}
-			out.println(v.p.x[K - 1]);
+			out.println(v.myKPoints.coords[K - 1]);
 		}
 
 	}
@@ -217,7 +250,7 @@ class KDTree {
 	void KFind(int k, KPoint t, Node v) {
 		if (v.flag)
 			return;
-		double dd = v.p.dis(t);
+		double dd = v.myKPoints.dis(t);
 		if (dd + eps < r) {
 			RNode tmp = new RNode(v, dd);
 			tmp.r = dd;
@@ -241,12 +274,12 @@ class KDTree {
 	boolean check(Node v, KPoint t, double r) {
 		KPoint now = new KPoint(K);
 		for (int i = 0; i < K; i++) {
-			if (v.p.lx[i] <= t.x[i] && t.x[i] <= v.p.mx[i]) {
-				now.x[i] = t.x[i];
-			} else if (t.x[i] > v.p.mx[i]) {
-				now.x[i] = v.p.mx[i];
+			if (v.myKPoints.lx[i] <= t.coords[i] && t.coords[i] <= v.myKPoints.mx[i]) {
+				now.coords[i] = t.coords[i];
+			} else if (t.coords[i] > v.myKPoints.mx[i]) {
+				now.coords[i] = v.myKPoints.mx[i];
 			} else
-				now.x[i] = v.p.lx[i];
+				now.coords[i] = v.myKPoints.lx[i];
 		}
 		now.k = K;
 		if (now.dis(t) < eps + r)
@@ -260,14 +293,6 @@ class KDTree {
 		aim = new KPoint(K);
 	}
 
-	KPoint aim;
-
-}
-
-class LeftThreadTree {
-	class Node {
-
-	}
 }
 
 class KdTreeTest {
@@ -283,14 +308,16 @@ class KdTreeTest {
 			KDTree kdTree = new KDTree(k, n, out);
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < k; j++) {
-					kdTree.myPoints[i].x[j] = in.nextInt();
+					kdTree.myPoints[i].coords[j] = in.nextInt();
 				}
 			}
+			// initialize
 			kdTree.work();
+			// output
 			int cin = in.nextInt();
 			for (int ci = 0; ci < cin; ci++) {
 				for (int i = 0; i < k; i++) {
-					kdTree.aim.x[i] = in.nextInt();
+					kdTree.aim.coords[i] = in.nextInt();
 				}
 				kdTree.KNN(in.nextInt());
 				// skp.nextLine();

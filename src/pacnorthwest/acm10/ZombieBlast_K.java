@@ -63,23 +63,23 @@ class PlaneTree {
 	 *            begin index
 	 * @param end
 	 *            end index (the index of the last element + 1) c++?!
-	 * @param depth
+	 * @param axis
 	 *            depth of the tree (also used to determine whether partition of
 	 *            points is horizontal or vertical)
 	 * @return the root of the tree / sub-tree (null if no element in myPoints
 	 *         with the range of index from begin to end)
 	 */
-	public Node buildTree(int begin, int end, int depth) {
+	public Node buildTree(int begin, int end, int axis) {
 		if (end - begin == 0) // no elements
 			return null;
 		else if (end - begin == 1) // one element
 			return new Node(myPoints.get(begin));
 		int medianIndex = (begin + end - 1) >> 1;
-		customizedQuickSort(depth, begin, end - 1);
+		customizedQuickSort(axis, begin, end - 1);
 		Node newNode = new Node(myPoints.get(medianIndex));
-		newNode.left = buildTree(begin, medianIndex, (depth + 1)
+		newNode.left = buildTree(begin, medianIndex, (axis + 1)
 				% NUM_DIMENSION);
-		newNode.right = buildTree(medianIndex + 1, end, (depth + 1)
+		newNode.right = buildTree(medianIndex + 1, end, (axis + 1)
 				% NUM_DIMENSION);
 		return newNode;
 	}

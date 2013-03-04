@@ -1,8 +1,10 @@
 package pacnorthwest.acm10;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * K-Dimensional Tree for all mines. Check the nearest neighbor for each zombie.
@@ -14,8 +16,84 @@ import java.util.Collections;
  */
 public class ZombieBlast_K {
 
-	public static void main(String[] args) {
+	private ArrayList<Point2D> zombies;
+	private ArrayList<Point2D> mines;
 
+	public void solve() {
+		Scanner scanner = new Scanner(System.in);
+		int n = scanner.nextInt();
+		for (int i = 0; i < n; i++) {
+			int width = scanner.nextInt();
+			int height = scanner.nextInt();
+			// maximum of all minimum distances between a zombie and other mines
+			double distance = 0;
+			scanner.nextLine();
+			zombies = new ArrayList<Point2D>();
+			mines = new ArrayList<Point2D>();
+			for (int j = 0; j < height; j++) {
+				String line = scanner.nextLine();
+				for (int k = 0; k < width; k++) {
+					if (line.charAt(k) == 'Z')
+						zombies.add(new Point(j, k));
+					else if (line.charAt(k) == 'M')
+						mines.add(new Point(j, k));
+				}
+			}
+			PlaneTree planeTree = new PlaneTree(mines);
+			//planeTree.printInOrderTraversal();
+			for (Point2D zombiePoint : zombies) {
+				distance = Math.max(distance, findNearestNeighbor(planeTree, zombiePoint, distance));
+			}
+			System.out.println(distance);
+		}
+	}
+
+	private double findNearestNeighbor(PlaneTree planeTree, Point2D requestPoint, double currentMaxDist) {
+		Stack<Node> searchPath = planeTree.generateSearchPath(requestPoint);
+		double minDistance = searchPath.peek().point.distance(requestPoint);
+		int index = searchPath.size() - 1; // for determining axis
+		ArrayList<Node> nodesToCheck = new ArrayList<Node>();
+		// backtrack
+		while (!searchPath.isEmpty()) {
+			Node currentNearNode = searchPath.pop();
+			Point2D currentNearPoint = currentNearNode.point;
+			double distanceToSeparatingLine = planeTree.valueAccordingToAxis(requestPoint, index)
+					- planeTree.valueAccordingToAxis(currentNearPoint, index);
+			// the circle with radius minDistance might cross the line
+			if (Math.abs(distanceToSeparatingLine) < minDistance) {
+				// check distance with this current near point
+				minDistance = Math.min(minDistance, currentNearPoint.distance(requestPoint));
+				// need to enter the OTHER sub-space
+				if (!currentNearNode.flag) {
+					// the requestPoint is on the left, go to right
+					if (currentNearNode.right != null) {
+						nodesToCheck.add(currentNearNode.right);
+					}
+				} else {
+					if (currentNearNode.left != null) {
+						nodesToCheck.add(currentNearNode.left);
+					}
+				}
+			}
+			// if the min distance is never gonna be the biggest among all min
+			// distance, just ignore it
+			if (minDistance < currentMaxDist)
+				return 0;
+		}
+		// check these additional nodes
+		for (Node node : nodesToCheck) {
+			double distance = planeTree.findMinDistance(requestPoint, node);
+			minDistance = Math.min(minDistance, distance);
+			// same thing as line 80
+			if (minDistance < currentMaxDist)
+				return 0;
+		}
+		return minDistance;
+	}
+
+	public static void main(String[] args) {
+		ZombieBlast_K zb = new ZombieBlast_K();
+		zb.solve();
 	}
 }
 
@@ -32,28 +110,22 @@ class PlaneTree {
 	private Node myCurrentNode;
 	private ArrayList<Point2D> myPoints;
 
-	public PlaneTree() {
-		myPoints = new ArrayList<Point2D>();
+	public PlaneTree(ArrayList<Point2D> points) {
+		myPoints = points;
+		myRoot = buildTree(0, myPoints.size(), 0);
 	}
 
-	/**
-	 * inner class that represents a node of the tree. constructed from a
-	 * Point2D
-	 * 
-	 * @author Rex
-	 * 
-	 */
-	class Node {
-		Point2D point;
-		Node left, right;
-		int num;
-		boolean flag;
+	public double findMinDistance(Point2D requestPoint, Node node) {
+		double distance = node.point.distance(requestPoint);
+		if (node.left != null)
+			distance = Math.min(distance, findMinDistance(requestPoint, node.left));
+		if (node.right != null)
+			distance = Math.min(distance, findMinDistance(requestPoint, node.right));
+		return distance;
+	}
 
-		Node(Point2D point) {
-			this.point = point;
-			this.num = 1;
-			this.flag = false;
-		}
+	public Node getRoot() {
+		return myRoot;
 	}
 
 	/**
@@ -63,24 +135,23 @@ class PlaneTree {
 	 *            begin index
 	 * @param end
 	 *            end index (the index of the last element + 1) c++?!
-	 * @param axis
+	 * @param depth
 	 *            depth of the tree (also used to determine whether partition of
 	 *            points is horizontal or vertical)
 	 * @return the root of the tree / sub-tree (null if no element in myPoints
 	 *         with the range of index from begin to end)
 	 */
-	public Node buildTree(int begin, int end, int axis) {
+	public Node buildTree(int begin, int end, int depth) {
 		if (end - begin == 0) // no elements
 			return null;
 		else if (end - begin == 1) // one element
 			return new Node(myPoints.get(begin));
 		int medianIndex = (begin + end - 1) >> 1;
-		customizedQuickSort(axis, begin, end - 1);
+		if (depth > 0) // Assumption: the initial input is already sorted...
+			customizedQuickSort(depth % NUM_DIMENSION, begin, end - 1);
 		Node newNode = new Node(myPoints.get(medianIndex));
-		newNode.left = buildTree(begin, medianIndex, (axis + 1)
-				% NUM_DIMENSION);
-		newNode.right = buildTree(medianIndex + 1, end, (axis + 1)
-				% NUM_DIMENSION);
+		newNode.left = buildTree(begin, medianIndex, depth + 1);
+		newNode.right = buildTree(medianIndex + 1, end, depth + 1);
 		return newNode;
 	}
 
@@ -94,14 +165,10 @@ class PlaneTree {
 		int j = last;
 		Point2D temp = myPoints.get(first);
 		while (i < j) {
-			while (i < j
-					&& valueAccordingToAxis(myPoints.get(j), axis) >= valueAccordingToAxis(
-							temp, axis))
+			while (i < j && valueAccordingToAxis(myPoints.get(j), axis) >= valueAccordingToAxis(temp, axis))
 				j--;
 			myPoints.set(i, myPoints.get(j));
-			while (i < j
-					&& valueAccordingToAxis(myPoints.get(i), axis) <= valueAccordingToAxis(
-							temp, axis))
+			while (i < j && valueAccordingToAxis(myPoints.get(i), axis) <= valueAccordingToAxis(temp, axis))
 				i++;
 			myPoints.set(j, myPoints.get(i));
 		}
@@ -112,11 +179,66 @@ class PlaneTree {
 			customizedQuickSort(axis, i + 1, last);
 	}
 
-	private double valueAccordingToAxis(Point2D point, int axis) {
+	public double valueAccordingToAxis(Point2D point, int axis) {
 		if (axis == 0) // x-axis
 			return point.getX();
 		else
 			// y-axis
 			return point.getY();
+	}
+
+	/**
+	 * print the entire 2D tree in in-order to stdout
+	 */
+	public void printInOrderTraversal() {
+		printInOrderTraversal(myRoot, 0);
+	}
+
+	private void printInOrderTraversal(Node root, int depth) {
+		if (root == null)
+			return;
+		printInOrderTraversal(root.left, depth + 1);
+		System.out.printf("depth %d; point: (%.2f, %.2f)\n", depth, root.point.getX(), root.point.getY());
+		printInOrderTraversal(root.right, depth + 1);
+	}
+
+	public Stack<Node> generateSearchPath(Point2D point) {
+		Stack<Node> searchPath = new Stack<Node>();
+		Node currentNode = myRoot;
+		int axis = 0;
+		while (currentNode != null) {
+			searchPath.push(currentNode);
+			if (valueAccordingToAxis(point, axis) <= valueAccordingToAxis(currentNode.point, axis)) {
+				currentNode.flag = false;
+				currentNode = currentNode.left;
+			} else {
+				currentNode.flag = true;
+				currentNode = currentNode.right;
+			}
+			axis = (axis + 1) % NUM_DIMENSION;
+		}
+		return searchPath;
+	}
+}
+
+/**
+ * Represents a node of the tree. constructed from a Point2D
+ * 
+ * @author Rex
+ * 
+ */
+class Node {
+	Point2D point;
+	Node left, right;
+	int num;
+	// flag: used for searchPath:
+	// false - requestPoint less than this point in the appropriate axis;
+	// true - right
+	boolean flag;
+
+	Node(Point2D point) {
+		this.point = point;
+		this.num = 1;
+		this.flag = false;
 	}
 }

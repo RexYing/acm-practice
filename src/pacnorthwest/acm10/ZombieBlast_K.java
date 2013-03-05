@@ -3,6 +3,7 @@ package pacnorthwest.acm10;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -30,17 +31,59 @@ public class ZombieBlast_K {
 			scanner.nextLine();
 			zombies = new ArrayList<Point2D>();
 			mines = new ArrayList<Point2D>();
+			// the following three lines are for the convenience of checking
+			// mines
+			char[] defaultChars = new char[width];
+			Arrays.fill(defaultChars, 'M');
+			String previousLine = new String(defaultChars);
+			String currentLine = scanner.nextLine();
+			String nextLine;
+			if (height == 1) // only one row...
+				nextLine = new String(defaultChars);
+			else
+				nextLine = scanner.nextLine();
+			// nextLine is actually the second line
 			for (int j = 0; j < height; j++) {
-				String line = scanner.nextLine();
 				for (int k = 0; k < width; k++) {
-					if (line.charAt(k) == 'Z')
+					if (currentLine.charAt(k) == 'Z')
 						zombies.add(new Point(j, k));
-					else if (line.charAt(k) == 'M')
+					else if (currentLine.charAt(k) == 'M') {
+						// check if this mine is surrounded by other mines
+						// if so, ignore this mine
+						if (k == 0) {
+							if (width == 1) { // only one column
+								if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M'))
+									continue;
+							} else {
+								if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
+										&& (currentLine.charAt(k + 1) == 'M'))
+									continue;
+							}
+						} else if (k == width - 1) {
+							if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
+									&& (currentLine.charAt(k - 1) == 'M'))
+								continue;
+						} else {
+							if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
+									&& (currentLine.charAt(k - 1) == 'M')
+									&& (currentLine.charAt(k + 1) == 'M'))
+								continue;
+						}
 						mines.add(new Point(j, k));
+					}
 				}
+				previousLine = currentLine;
+				currentLine = nextLine;
+				if (j >= height - 2) {
+					// the "line" after the last line
+					nextLine = new String(defaultChars);
+				} else
+					nextLine = scanner.nextLine();
 			}
+
 			PlaneTree planeTree = new PlaneTree(mines);
-			//planeTree.printInOrderTraversal();
+			System.out.println(planeTree.myPoints.size());
+			// planeTree.printInOrderTraversal();
 			for (Point2D zombiePoint : zombies) {
 				distance = Math.max(distance, findNearestNeighbor(planeTree, zombiePoint, distance));
 			}
@@ -107,8 +150,7 @@ class PlaneTree {
 
 	private static final int NUM_DIMENSION = 2;
 	private Node myRoot;
-	private Node myCurrentNode;
-	private ArrayList<Point2D> myPoints;
+	public ArrayList<Point2D> myPoints;
 
 	public PlaneTree(ArrayList<Point2D> points) {
 		myPoints = points;

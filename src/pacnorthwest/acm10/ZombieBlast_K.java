@@ -44,6 +44,7 @@ public class ZombieBlast_K {
 				nextLine = scanner.nextLine();
 			// nextLine is actually the second line
 			for (int j = 0; j < height; j++) {
+				// String currentLine = scanner.nextLine();
 				for (int k = 0; k < width; k++) {
 					if (currentLine.charAt(k) == 'Z')
 						zombies.add(new Point(j, k));
@@ -58,15 +59,25 @@ public class ZombieBlast_K {
 								if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
 										&& (currentLine.charAt(k + 1) == 'M'))
 									continue;
+								if ((height != 1) && (previousLine.charAt(k + 1) == 'M')
+										&& (nextLine.charAt(k + 1) == 'M'))
+									continue;
 							}
 						} else if (k == width - 1) {
 							if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
 									&& (currentLine.charAt(k - 1) == 'M'))
 								continue;
+							if ((width != 1) && (height != 1) && (previousLine.charAt(k - 1) == 'M')
+									&& (nextLine.charAt(k - 1) == 'M'))
+								continue;
 						} else {
 							if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
 									&& (currentLine.charAt(k - 1) == 'M')
 									&& (currentLine.charAt(k + 1) == 'M'))
+								continue;
+							if ((width != 1) && (height != 1) && (previousLine.charAt(k - 1) == 'M')
+									&& (nextLine.charAt(k - 1) == 'M') && (previousLine.charAt(k + 1) == 'M')
+									&& (nextLine.charAt(k + 1) == 'M'))
 								continue;
 						}
 						mines.add(new Point(j, k));
@@ -83,7 +94,7 @@ public class ZombieBlast_K {
 
 			PlaneTree planeTree = new PlaneTree(mines);
 			System.out.println(planeTree.myPoints.size());
-			// planeTree.printInOrderTraversal();
+			//planeTree.printInOrderTraversal();
 			for (Point2D zombiePoint : zombies) {
 				distance = Math.max(distance, findNearestNeighbor(planeTree, zombiePoint, distance));
 			}
@@ -100,8 +111,9 @@ public class ZombieBlast_K {
 		while (!searchPath.isEmpty()) {
 			Node currentNearNode = searchPath.pop();
 			Point2D currentNearPoint = currentNearNode.point;
-			double distanceToSeparatingLine = planeTree.valueAccordingToAxis(requestPoint, index)
-					- planeTree.valueAccordingToAxis(currentNearPoint, index);
+			double distanceToSeparatingLine = planeTree.valueAccordingToAxis(requestPoint, index
+					% PlaneTree.NUM_DIMENSION)
+					- planeTree.valueAccordingToAxis(currentNearPoint, index % PlaneTree.NUM_DIMENSION);
 			// the circle with radius minDistance might cross the line
 			if (Math.abs(distanceToSeparatingLine) < minDistance) {
 				// check distance with this current near point
@@ -118,10 +130,11 @@ public class ZombieBlast_K {
 					}
 				}
 			}
+			index--; // NEVER FORGET TO DECREMENT INDEX!!!!!!!
 			// if the min distance is never gonna be the biggest among all min
 			// distance, just ignore it
 			if (minDistance < currentMaxDist)
-				return 0;
+			   return 0;
 		}
 		// check these additional nodes
 		for (Node node : nodesToCheck) {
@@ -129,7 +142,7 @@ public class ZombieBlast_K {
 			minDistance = Math.min(minDistance, distance);
 			// same thing as line 80
 			if (minDistance < currentMaxDist)
-				return 0;
+			   return 0;
 		}
 		return minDistance;
 	}
@@ -148,7 +161,7 @@ public class ZombieBlast_K {
  */
 class PlaneTree {
 
-	private static final int NUM_DIMENSION = 2;
+	public static final int NUM_DIMENSION = 2;
 	private Node myRoot;
 	public ArrayList<Point2D> myPoints;
 
@@ -224,9 +237,13 @@ class PlaneTree {
 	public double valueAccordingToAxis(Point2D point, int axis) {
 		if (axis == 0) // x-axis
 			return point.getX();
-		else
+		else if (axis == 1)
 			// y-axis
 			return point.getY();
+		else { // something is wrong!! only 2 dimension
+			System.err.println("invalid axis argument!!");
+			return 0;
+		}
 	}
 
 	/**

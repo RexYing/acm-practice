@@ -93,7 +93,7 @@ public class ZombieBlast_K {
 			}
 
 			PlaneTree planeTree = new PlaneTree(mines);
-			System.out.println(planeTree.myPoints.size());
+			//System.out.println(planeTree.myPoints.size());
 			//planeTree.printInOrderTraversal();
 			for (Point2D zombiePoint : zombies) {
 				distance = Math.max(distance, findNearestNeighbor(planeTree, zombiePoint, distance));

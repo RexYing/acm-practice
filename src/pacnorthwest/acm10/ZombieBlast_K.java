@@ -107,6 +107,12 @@ public class ZombieBlast_K {
 			// System.out.println(planeTree.myPoints.size());
 			// System.out.println(zombies.size());
 			// planeTree.printInOrderTraversal();
+			Point2D randomZombie = zombies.get(zombies.size() / 2);
+			// the trick! guess some zombie that is further away from mines
+			distance = Math.max(
+					distance,
+					findNearestNeighbor(planeTree, planeTree.getRoot(),
+							randomZombie, distance));
 			for (Point2D zombiePoint : zombies) {
 				//double pd = distance;
 				distance = Math.max(
@@ -117,7 +123,8 @@ public class ZombieBlast_K {
 				//	z = zombiePoint;
 			}
 			//System.out.println(z);
-			System.out.println(distance);
+			System.out.printf("%.7f\n", distance);
+			//System.out.println(distance);
 		}
 	}
 
@@ -154,7 +161,7 @@ public class ZombieBlast_K {
 			}
 			// if the min distance is never gonna be the biggest among all min
 			// distance, just ignore it
-			if (minDistance < currentMaxDist)
+			if (minDistance <= currentMaxDist)
 				return 0;
 		}
 		// check these additional nodes
@@ -164,8 +171,8 @@ public class ZombieBlast_K {
 			double distance = findNearestNeighbor(planeTree, node,
 					requestPoint, currentMaxDist);
 			minDistance = Math.min(minDistance, distance);
-			// same thing as line 159
-			if (minDistance < currentMaxDist)
+			// same thing as line 164
+			if (minDistance <= currentMaxDist)
 				return 0;
 		}
 		return minDistance;

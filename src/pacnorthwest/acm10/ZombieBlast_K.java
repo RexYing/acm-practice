@@ -21,7 +21,9 @@ public class ZombieBlast_K {
 
 	private ArrayList<Point2D> zombies;
 	private ArrayList<Point2D> mines;
-	//private Point2D z; // for debugging purpose: the zombie that has the longest distance to a mine
+
+	// private Point2D z; // for debugging purpose: the zombie that has the
+	// longest distance to a mine
 
 	public void solve() {
 		Scanner scanner = new Scanner(System.in);
@@ -56,38 +58,29 @@ public class ZombieBlast_K {
 						// if so, ignore this mine
 						if (k == 0) {
 							if (width == 1) { // only one column
-								if ((previousLine.charAt(k) == 'M')
-										&& (nextLine.charAt(k) == 'M'))
+								if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M'))
 									continue;
 							} else {
-								if ((previousLine.charAt(k) == 'M')
-										&& (nextLine.charAt(k) == 'M')
+								if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
 										&& (currentLine.charAt(k + 1) == 'M'))
 									continue;
-								if ((height != 1)
-										&& (previousLine.charAt(k + 1) == 'M')
+								if ((height != 1) && (previousLine.charAt(k + 1) == 'M')
 										&& (nextLine.charAt(k + 1) == 'M'))
 									continue;
 							}
 						} else if (k == width - 1) {
-							if ((previousLine.charAt(k) == 'M')
-									&& (nextLine.charAt(k) == 'M')
+							if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
 									&& (currentLine.charAt(k - 1) == 'M'))
 								continue;
-							if ((width != 1) && (height != 1)
-									&& (previousLine.charAt(k - 1) == 'M')
+							if ((width != 1) && (height != 1) && (previousLine.charAt(k - 1) == 'M')
 									&& (nextLine.charAt(k - 1) == 'M'))
 								continue;
 						} else {
-							if ((previousLine.charAt(k) == 'M')
-									&& (nextLine.charAt(k) == 'M')
-									&& (currentLine.charAt(k - 1) == 'M')
-									&& (currentLine.charAt(k + 1) == 'M'))
+							if ((previousLine.charAt(k) == 'M') && (nextLine.charAt(k) == 'M')
+									&& (currentLine.charAt(k - 1) == 'M') && (currentLine.charAt(k + 1) == 'M'))
 								continue;
-							if ((width != 1) && (height != 1)
-									&& (previousLine.charAt(k - 1) == 'M')
-									&& (nextLine.charAt(k - 1) == 'M')
-									&& (previousLine.charAt(k + 1) == 'M')
+							if ((width != 1) && (height != 1) && (previousLine.charAt(k - 1) == 'M')
+									&& (nextLine.charAt(k - 1) == 'M') && (previousLine.charAt(k + 1) == 'M')
 									&& (nextLine.charAt(k + 1) == 'M'))
 								continue;
 						}
@@ -109,44 +102,35 @@ public class ZombieBlast_K {
 			// planeTree.printInOrderTraversal();
 			Point2D randomZombie = zombies.get(zombies.size() / 2);
 			// the trick! guess some zombie that is further away from mines
-			distance = Math.max(
-					distance,
-					findNearestNeighbor(planeTree, planeTree.getRoot(),
-							randomZombie, distance));
+			distance = Math.max(distance, findNearestNeighbor(planeTree, planeTree.getRoot(), randomZombie, distance));
 			for (Point2D zombiePoint : zombies) {
-				//double pd = distance;
-				distance = Math.max(
-						distance,
-						findNearestNeighbor(planeTree, planeTree.getRoot(),
-								zombiePoint, distance));
-				//if (pd != distance)
-				//	z = zombiePoint;
+				// double pd = distance;
+				distance = Math.max(distance,
+						findNearestNeighbor(planeTree, planeTree.getRoot(), zombiePoint, distance));
+				// if (pd != distance)
+				// z = zombiePoint;
 			}
-			//System.out.println(z);
+			// System.out.println(z);
 			System.out.printf("%.7f\n", distance);
-			//System.out.println(distance);
+			// System.out.println(distance);
 		}
 	}
 
-	private double findNearestNeighbor(PlaneTree planeTree, Node root,
-			Point2D requestPoint, double currentMaxDist) {
-		Stack<Node> searchPath = planeTree.generateSearchPath(root,
-				requestPoint);
+	private double findNearestNeighbor(PlaneTree planeTree, Node root, Point2D requestPoint, double currentMaxDist) {
+		Stack<Node> searchPath = planeTree.generateSearchPath(root, requestPoint);
 		double minDistance = searchPath.peek().point.distance(requestPoint);
 		ArrayList<Node> nodesToCheck = new ArrayList<Node>();
 		// backtrack
 		while (!searchPath.isEmpty()) {
 			Node currentNearNode = searchPath.pop();
 			Point2D currentNearPoint = currentNearNode.point;
-			double distanceToSeparatingLine = planeTree.valueAccordingToAxis(
-					requestPoint, currentNearNode.depth % PlaneTree.NUM_DIMENSION)
-					- planeTree.valueAccordingToAxis(currentNearPoint, currentNearNode.depth
-							% PlaneTree.NUM_DIMENSION);
+			double distanceToSeparatingLine = planeTree.valueAccordingToAxis(requestPoint, currentNearNode.depth
+					% PlaneTree.NUM_DIMENSION)
+					- planeTree.valueAccordingToAxis(currentNearPoint, currentNearNode.depth % PlaneTree.NUM_DIMENSION);
 			// the circle with radius minDistance might cross the line
 			if (Math.abs(distanceToSeparatingLine) < minDistance) {
 				// check distance with this current near point
-				minDistance = Math.min(minDistance,
-						currentNearPoint.distance(requestPoint));
+				minDistance = Math.min(minDistance, currentNearPoint.distance(requestPoint));
 				// need to enter the OTHER sub-space
 				if (!currentNearNode.flag) {
 					// the requestPoint is on the left, go to right
@@ -168,8 +152,7 @@ public class ZombieBlast_K {
 		for (Node node : nodesToCheck) {
 			// the following commented line is inefficient. Don't do this!
 			// double distance = planeTree.findMinDistance(requestPoint, node);
-			double distance = findNearestNeighbor(planeTree, node,
-					requestPoint, currentMaxDist);
+			double distance = findNearestNeighbor(planeTree, node, requestPoint, currentMaxDist);
 			minDistance = Math.min(minDistance, distance);
 			// same thing as line 164
 			if (minDistance <= currentMaxDist)
@@ -214,11 +197,9 @@ class PlaneTree {
 	public double findMinDistance(Point2D requestPoint, Node node) {
 		double distance = node.point.distance(requestPoint);
 		if (node.left != null)
-			distance = Math.min(distance,
-					findMinDistance(requestPoint, node.left));
+			distance = Math.min(distance, findMinDistance(requestPoint, node.left));
 		if (node.right != null)
-			distance = Math.min(distance,
-					findMinDistance(requestPoint, node.right));
+			distance = Math.min(distance, findMinDistance(requestPoint, node.right));
 		return distance;
 	}
 
@@ -263,14 +244,10 @@ class PlaneTree {
 		int j = last;
 		Point2D temp = myPoints.get(first);
 		while (i < j) {
-			while (i < j
-					&& valueAccordingToAxis(myPoints.get(j), axis) >= valueAccordingToAxis(
-							temp, axis))
+			while (i < j && valueAccordingToAxis(myPoints.get(j), axis) >= valueAccordingToAxis(temp, axis))
 				j--;
 			myPoints.set(i, myPoints.get(j));
-			while (i < j
-					&& valueAccordingToAxis(myPoints.get(i), axis) <= valueAccordingToAxis(
-							temp, axis))
+			while (i < j && valueAccordingToAxis(myPoints.get(i), axis) <= valueAccordingToAxis(temp, axis))
 				i++;
 			myPoints.set(j, myPoints.get(i));
 		}
@@ -304,8 +281,7 @@ class PlaneTree {
 		if (root == null)
 			return;
 		printInOrderTraversal(root.left, depth + 1);
-		System.out.printf("depth %d; point: (%.2f, %.2f)\n", depth,
-				root.point.getX(), root.point.getY());
+		System.out.printf("depth %d; point: (%.2f, %.2f)\n", depth, root.point.getX(), root.point.getY());
 		printInOrderTraversal(root.right, depth + 1);
 	}
 
@@ -324,8 +300,7 @@ class PlaneTree {
 		int axis = 0;
 		while (currentNode != null) {
 			searchPath.push(currentNode);
-			if (valueAccordingToAxis(point, axis) <= valueAccordingToAxis(
-					currentNode.point, axis)) {
+			if (valueAccordingToAxis(point, axis) <= valueAccordingToAxis(currentNode.point, axis)) {
 				currentNode.flag = false;
 				currentNode = currentNode.left;
 			} else {

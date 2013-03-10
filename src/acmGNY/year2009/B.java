@@ -1,4 +1,4 @@
-package acmGNY;
+package acmGNY.year2009;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,12 +12,12 @@ import java.util.Scanner;
  *
  * @date 02/23/2013
  */
-public class B_2009 {
+public class B {
 	private int[] myData; // number of int in the sequence
 	private int mySum;
 	private ArrayList<Integer> myDivisors;
 
-	public B_2009(int[] data, int sum) {
+	public B(int[] data, int sum) {
 		myData = data;
 		mySum = sum;
 	}
@@ -70,7 +70,7 @@ public class B_2009 {
 				data[j] = scanner.nextInt();
 				sum += data[j];
 			}
-			B_2009 b2009 = new B_2009(data, sum);
+			B b2009 = new B(data, sum);
 			int result = b2009.solve();
 			System.out.printf("%d %d\n", setNumber, result);
 		}

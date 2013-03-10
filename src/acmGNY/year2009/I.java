@@ -1,10 +1,10 @@
-package acmGNY;
-
+package acmGNY.year2009;
+//not finished
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class I_2009 {
+public class I {
 
 	public String thetaPuzzle(String initPosition) {
 		String result = "";
@@ -13,7 +13,7 @@ public class I_2009 {
 	}
 
 	public static void main() throws NumberFormatException, IOException {
-		I_2009 i2009 = new I_2009();
+		I i2009 = new I();
 		BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 		int P = 0;
 		P = Integer.parseInt(bf.readLine());

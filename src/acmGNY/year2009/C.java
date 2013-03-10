@@ -1,4 +1,4 @@
-package acmGNY;
+package acmGNY.year2009;
 
 import java.util.Scanner;
 
@@ -12,7 +12,7 @@ import java.util.Scanner;
  * @date 02/23/2013
  *
  */
-public class C_2009 {
+public class C {
 
 	public static void main(String[] args) {
 		final int MAX_BALL = 50;

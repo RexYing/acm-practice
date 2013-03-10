@@ -1,4 +1,4 @@
-package acmGNY;
+package acmGNY.year2009;
 
 import java.util.Scanner;
 
@@ -8,7 +8,7 @@ import java.util.Scanner;
  *
  * @date 02/23/2013
  */
-public class A_2009 {
+public class A {
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);

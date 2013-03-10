@@ -1,4 +1,4 @@
-package acmGNY;
+package acmGNY.year2009;
 
 import java.util.Scanner;
 
@@ -9,7 +9,7 @@ import java.util.Scanner;
  *
  * @date 02/24/2013
  */
-public class E_2009 {
+public class E {
 
 	// modifies c to next permutation or returns null if such permutation does
 	// not exist

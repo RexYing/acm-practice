@@ -105,8 +105,6 @@ public class ZombieBlast_K {
 
 			PlaneTree planeTree = new PlaneTree(mines);
 			// System.out.println(planeTree.myPoints.size());
-			for (Point2D p: planeTree.myPoints)
-				System.out.println(p);
 			// System.out.println(zombies.size());
 			// planeTree.printInOrderTraversal();
 			for (Point2D zombiePoint : zombies) {
@@ -128,7 +126,6 @@ public class ZombieBlast_K {
 		Stack<Node> searchPath = planeTree.generateSearchPath(root,
 				requestPoint);
 		double minDistance = searchPath.peek().point.distance(requestPoint);
-		int index = searchPath.size() - 1; // for determining axis
 		ArrayList<Node> nodesToCheck = new ArrayList<Node>();
 		// backtrack
 		while (!searchPath.isEmpty()) {
@@ -155,7 +152,6 @@ public class ZombieBlast_K {
 					}
 				}
 			}
-			index--; // NEVER FORGET TO DECREMENT INDEX!!!!!!!
 			// if the min distance is never gonna be the biggest among all min
 			// distance, just ignore it
 			if (minDistance < currentMaxDist)

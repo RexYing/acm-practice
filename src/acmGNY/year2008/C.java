@@ -39,5 +39,6 @@ public class C {
 					System.out.print(clockValue[j][k]);
 			System.out.println();
 		}
+		scanner.close();
 	}
 }

@@ -7,8 +7,7 @@ import java.util.Scanner;
 
 /**
  * Simple! Use %.6f for 6 decimal places. Long.parseLong(stringWithout0x, 16)
- * for reading hex
- * finding prime factors is actually not that inefficient:D
+ * for reading hex finding prime factors is actually not that inefficient:D
  * tried Pair...
  * 
  * @author Rex
@@ -31,22 +30,19 @@ public class DecomposingFibonacciNumbers_E {
 			System.out.println("Range " + low + " to " + high + ":");
 			Integer lowerBoundIndex = findIndexRange(low, myFibonacciNumbers).second;
 			Integer upperBoundIndex = findIndexRange(high, myFibonacciNumbers).first;
-			if ((lowerBoundIndex == null) || (upperBoundIndex == null)
-					|| (lowerBoundIndex > upperBoundIndex)) {
+			if ((lowerBoundIndex == null) || (upperBoundIndex == null) || (lowerBoundIndex > upperBoundIndex)) {
 				// print with a blank line
 				System.out.println("No Fibonacci numbers in the range\n");
 			} else {
 				for (int i = lowerBoundIndex; i <= upperBoundIndex; i++) {
-					System.out.printf("Fib(%d) = %d, ", i,
-							myFibonacciNumbers.get(i));
+					System.out.printf("Fib(%d) = %d, ", i, myFibonacciNumbers.get(i));
 					Double logValue = myFibonacciNumberProperties.get(i).logValue;
 					if (logValue == null)
 						System.out.println("lg does not exist");
 					else
 						System.out.printf("lg is %.6f\n", logValue);
 					// prime factors
-					String printedFactors = myFibonacciNumberProperties.get(i)
-							.printFactorization();
+					String printedFactors = myFibonacciNumberProperties.get(i).printFactorization();
 					if (printedFactors.equals(""))
 						System.out.println("No prime factors");
 					else
@@ -56,8 +52,7 @@ public class DecomposingFibonacciNumbers_E {
 			}
 			try {
 				line = scanner.nextLine();
-			}
-			catch (NoSuchElementException e) {
+			} catch (NoSuchElementException e) {
 				break;
 			}
 		}
@@ -74,8 +69,7 @@ public class DecomposingFibonacciNumbers_E {
 	 *            list of numbers
 	 * @return pair of lower and upper index range
 	 */
-	private Pair<Integer, Integer> findIndexRange(long request,
-			List<Long> numbers) {
+	private Pair<Integer, Integer> findIndexRange(long request, List<Long> numbers) {
 		if (request < 0)
 			return new Pair<Integer, Integer>(-1, -1);
 		int begin = 0;

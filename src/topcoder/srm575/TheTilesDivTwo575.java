@@ -1,4 +1,4 @@
-package topcoder.srm;
+package topcoder.srm575;
 
 public class TheTilesDivTwo575 {
 	

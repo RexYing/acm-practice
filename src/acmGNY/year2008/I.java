@@ -4,7 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.Scanner;
 
 /**
- * Joe's Triangular Gardens A math problem... Relevant material: 98. Steiner¡¯s
+ * Joe's Triangular Gardens A math problem... Relevant material: 98. Steiner's
  * Ellipse Problem from
  * "100 Great Problems of Elementary Mathematics: Their History and Solution" by
  * Heinrich Dorrie (David Antin trans.)

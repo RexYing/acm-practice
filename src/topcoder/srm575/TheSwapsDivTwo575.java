@@ -1,9 +1,10 @@
-package topcoder.srm;
+package topcoder.srm575;
 
 public class TheSwapsDivTwo575
 {
 	public int find(int[] sequence)
 	{
+		boolean hasSameNum = false;
 		if (sequence.length == 2)
 			return 1;
 		int count = 0;
@@ -11,8 +12,13 @@ public class TheSwapsDivTwo575
 			for (int j = i + 1; j < sequence.length; j++) {
 				if (sequence[i] != sequence[j])
 					count++;
+				else
+					hasSameNum = true;
 			}
 		}
-		return count + 1;
+		if (hasSameNum)
+			return count + 1;
+		else
+			return count;
 	}
 }

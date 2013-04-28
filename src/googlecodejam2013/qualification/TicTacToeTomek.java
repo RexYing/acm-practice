@@ -1,4 +1,4 @@
-package googlecodejam2013;
+package googlecodejam2013.qualification;
 
 import java.util.Scanner;
 

@@ -83,7 +83,7 @@ public class CutVertex {
 					// the below test of low and num is not applicable to root
 					continue;
 				}
-				if (low[neighbor] >= num[vertex]) {
+				if (low[neighbor] >= num[vertex]) { // To find bridge, this condition should be strictly greater than
 					isCutVerts[vertex] = true;
 				}
 				/*

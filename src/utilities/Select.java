@@ -39,7 +39,7 @@ public class Select {
 		if (pivotPos < k)
 			return quickSelect(array, pivotPos + 1, end, k);
 		else if (pivotPos > k)
-			return quickSelect(array, begin, pivotPos - 1, k);
+			return quickSelect(array, begin, pivotPos, k);
 		else
 			return array[pivotPos];
 	}

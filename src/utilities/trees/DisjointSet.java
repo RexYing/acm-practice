@@ -1,6 +1,7 @@
 package utilities.trees;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DisjointSet {
 	
@@ -14,7 +15,7 @@ public class DisjointSet {
 		}
 	}
 	
-	private ArrayList<SetElem> disjointSet;
+	private List<SetElem> disjointSet;
 
 	public DisjointSet(int n) {
 		disjointSet = new ArrayList<SetElem>();
@@ -36,38 +37,31 @@ public class DisjointSet {
 		while (disjointSet.get(elem).parent != elem) {
 			// attach below the representative
 			disjointSet.get(elem).parent = root;
-			disjointSet.get(elem).rank = 2;
 			elem = disjointSet.get(elem).parent;
 		}
 		return root;
 	}
 	
-	public int findIncRank(int elem) {
-		int root = elem;
-		while (disjointSet.get(root).parent != root) {
-			root = disjointSet.get(root).parent;
+	public boolean isSameSet(int elem1, int elem2) {
+		if (find(elem1) == find(elem2)) {
+			return true;
 		}
-		disjointSet.get(root).rank = 2;
-		while (disjointSet.get(elem).parent != elem) {
-			// attach below the representative
-			disjointSet.get(elem).parent = root;
-			disjointSet.get(elem).rank = 3;
-			elem = disjointSet.get(elem).parent;
-		}
-		return root;
+		else
+			return false;
 	}
 	
 	public void union(int elem1, int elem2) {
-		int root = -1;
-		int child = -1;
-		if (disjointSet.get(elem1).rank >= disjointSet.get(elem2).rank) {
-			root = find(elem1);
-			child = find(elem2);
+		int rep1 = find(elem1);
+		int rep2 = find(elem2);
+		// union by rank:
+		// attach the rep with lower rank to the other with high rank
+		if (disjointSet.get(rep1).rank >= disjointSet.get(rep2).rank) {
+			disjointSet.get(rep2).parent = rep1;
+			disjointSet.get(rep1).rank += 1;
 		}
 		else {
-			root = find(elem2);
-			child = find(elem1);
+			disjointSet.get(rep1).parent = rep2;
+			disjointSet.get(rep2).rank += 1;
 		}
-		disjointSet.get(child).parent = root;
 	}
 }

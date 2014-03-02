@@ -8,6 +8,10 @@ public class Sort {
 		array[ind2] = temp;
 	}
 	
+	/**
+	 * rearrange array such that the if array[pivotIndex] is i-th largest, array[i] = array[pivotIndex];
+	 * @param position of pivot according to its value rank in array.
+	 */
 	public static int partition(int[] array, int begin, int end, int pivotInd) {
 	    int pivotPos = 0;
 	    int index = 0;
@@ -85,13 +89,9 @@ public class Sort {
 		}
 		return writes;
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
+/*
+	public static void insertSort(int[] array, int begin, int end) {
+		for (int i = 1; i < )
 	}
-
+*/
 }

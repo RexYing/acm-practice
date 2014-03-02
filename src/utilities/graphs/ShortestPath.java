@@ -14,7 +14,7 @@ public class ShortestPath {
 	 *            the adjacency matrix
 	 * @return the length of the path from r to each node
 	 */
-	public int[] dijkstra2(int r, int[][] in) {
+	public int[] dijkstraAM(int r, int[][] in) {
 		final int[] out = new int[in.length], prev = new int[in.length];
 		TreeSet<Integer> pq = new TreeSet<Integer>(new Comparator<Integer>() {
 			public int compare(Integer i0, Integer i1) {

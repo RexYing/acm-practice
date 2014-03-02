@@ -1,4 +1,4 @@
-package googlecodejam2013;
+package googlecodejam2013.round1A;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

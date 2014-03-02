@@ -1,6 +1,6 @@
-package utilities;
+package utilities.strings;
 
-public class StringUtil {
+public class Matching {
 
 	public static int[] partialMatch(char[] arr) {
 		int[] table = new int[arr.length];
@@ -42,14 +42,6 @@ public class StringUtil {
 			}
 		}
 		return -1;
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO BM string search; Sunday algorithm; Suffix tree
-
 	}
 
 }

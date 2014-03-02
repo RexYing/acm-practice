@@ -1,4 +1,4 @@
-package googlecodejam2013;
+package googlecodejam2013.round1A;
 
 import java.util.Arrays;
 import java.util.Scanner;

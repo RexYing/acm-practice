@@ -46,5 +46,10 @@ public class GraphTest {
 		for (int i = 0; i < cutVertices.size(); i++)
 			assertEquals("The " + i + " element: ", answer[i], (int)cutVertices.get(i));
 	}
+	
+	@Test
+	public void testMaxFlow() {
+		ArrayList<ArrayList<Integer>> graph = buildTestGraph("src/utilities/test/test_conn_graph1");
+	}
 
 }

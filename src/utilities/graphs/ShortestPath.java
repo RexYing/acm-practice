@@ -20,6 +20,7 @@ public class ShortestPath {
 			public int compare(Integer i0, Integer i1) {
 				if (out[i0] != out[i1])
 					return Double.compare(out[i0], out[i1]);
+				// note: the method is for a set (won't insert the element if this method returns 0)
 				return i0 - i1;
 			}
 		});

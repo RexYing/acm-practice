@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
 
 import utilities.graphs.CutVertex;
+import utilities.graphs.ShortestPath;
 
 public class GraphTest {
 	
@@ -22,8 +25,8 @@ public class GraphTest {
 			System.err.println(filename + " not found.");
 			System.exit(1);
 		}
-		ArrayList<ArrayList<Integer>> graph = new ArrayList<ArrayList<Integer>>();
 		fScanner.nextLine();
+		ArrayList<ArrayList<Integer>> graph = new ArrayList<ArrayList<Integer>>();
 		int size = fScanner.nextInt();
 		fScanner.nextLine();
 		for (int i = 0; i < size; i++) {
@@ -38,6 +41,31 @@ public class GraphTest {
 		return graph;
 	}
 	
+	public int[][] buildTestMat(String filename) throws IOException {
+		Scanner fScanner = null;
+		try {
+			fScanner = new Scanner(new File(filename));
+		} catch (FileNotFoundException e) {
+			System.err.println(filename + " not found.");
+			System.exit(1);
+		}
+		String type = fScanner.nextLine();
+		if (!type.equals("Weighted AdjMat"))
+			throw new IOException("expecting Weighted AdjMat");
+		int size = fScanner.nextInt();
+		int[][] adjMat = new int[size][size];
+		fScanner.nextLine();
+		for (int i = 0; i < size; i++) {
+			String[] neighborStr = fScanner.nextLine().split(" ");
+			for (int j = 0; j < size; j++) {
+				adjMat[i][j] = Integer.parseInt(neighborStr[j]);
+				if (adjMat[i][j] == -1)
+					adjMat[i][j] = Integer.MAX_VALUE / 2;
+			}
+		}
+		return adjMat;
+	}
+	
 	@Test
 	public void testCutVertex() {
 		ArrayList<ArrayList<Integer>> graph = buildTestGraph("src/utilities/test/test_conn_graph1");
@@ -47,4 +75,11 @@ public class GraphTest {
 			assertEquals("The " + i + " element: ", answer[i], (int)cutVertices.get(i));
 	}
 
+	@Test
+	public void testShortestPath() throws IOException {
+		ShortestPath sp = new ShortestPath();
+		int[][] adjMat = buildTestMat("src/utilities/test/neg_w_graph1");
+		int[] dists = sp.dijkstra(0, adjMat);
+		System.out.println(Arrays.toString(dists));
+	}
 }
